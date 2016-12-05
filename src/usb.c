@@ -265,14 +265,12 @@ static void usb_process_get_status()
 	}
 }
 
+#include "ipage_descriptors.h"
 
-static uint8_t __xdata dbuf[256];
 void send_ipage_descriptor(uint16_t addr, uint8_t len)
 {
 	FSR|=(1<<3);
-	memcpy(dbuf, (void __xdata*) addr, len);
-	ep0_send_data(dbuf, len);
-	FSR&=~(1<<3);
+	ep0_send_data((__xdata uint8_t*) addr, len);
 }
 
 static void usb_process_get_descriptor()
@@ -282,10 +280,12 @@ static void usb_process_get_descriptor()
 	{	    
 	case USB_DESC_DEVICE:
 		ep0_send_data((__xdata uint8_t *)&g_usb_dev_desc, sizeof(usb_dev_desc_t));
+		//send_ipage_descriptor(IPAGE_OFF_g_usb_dev_desc, IPAGE_LEN_g_usb_dev_desc);
 		break;
 	    
 	case USB_DESC_CONFIGURATION:
 		ep0_send_data((__xdata uint8_t *)&g_usb_conf_desc, sizeof(usb_conf_desc_bootloader_t));
+		//send_ipage_descriptor(IPAGE_OFF_g_usb_conf_desc, IPAGE_LEN_g_usb_conf_desc);
 		break;
 
 	case USB_DESC_HID:
